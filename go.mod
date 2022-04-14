@@ -19,6 +19,7 @@ require (
 	github.com/go-resty/resty/v2 v2.7.0
 	github.com/labstack/echo/v4 v4.7.2
 	github.com/leodido/go-urn v1.2.1 // indirect
+	github.com/streadway/amqp v1.0.0
 )
 
 require (
