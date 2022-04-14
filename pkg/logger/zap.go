@@ -7,6 +7,7 @@ import (
 	"os"
 	"sync"
 
+	"github.com/aivencs/box/pkg/validate"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
@@ -91,10 +92,19 @@ type Option struct {
 	Encode      EncoderSupport `json:"encoder" label:"输出格式" desc:""`
 }
 
+func init() {
+	ctx := context.WithValue(context.Background(), "trace", "init-for-logger")
+	validate.InitValidate(ctx, "validator", validate.Option{})
+}
+
 // 初始化对象
 func InitLogger(ctx context.Context, support TypeSupport, option Option) error {
 	c := logger
 	var err error
+	message, err := validate.Work(ctx, option)
+	if err != nil {
+		return NewBoxError(PVERROR, message)
+	}
 	once.Do(func() {
 		c = LoggerFactory(ctx, support, option)
 		if c == nil {
