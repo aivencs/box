@@ -1,4 +1,4 @@
-package vlidate
+package validate
 
 import (
 	"context"
