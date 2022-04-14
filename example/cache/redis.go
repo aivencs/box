@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/aivencs/magic-box/pkg/cache"
+	"github.com/aivencs/box/pkg/cache"
 )
 
 func main() {
