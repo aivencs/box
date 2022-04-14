@@ -11,10 +11,10 @@ import (
 func main() {
 	ctx := context.WithValue(context.Background(), "trace", "ctx-filter-001")
 	err := filter.InitFilter(ctx, filter.BLOOM, filter.Option{
-		Host:     "47.113.201.162:6379",
+		Host:     "localhost:6379",
 		Auth:     true,
 		Username: "",
-		Password: "0o0o_5@Ges",
+		Password: "password",
 		Database: "",
 		Table:    "",
 		DB:       1,

@@ -59,7 +59,7 @@ func InitFilter(ctx context.Context, name TypeSupport, option Option) error {
 	var err error
 	message, err := validate.Work(ctx, option)
 	if err != nil {
-		return logger.NewBoxError(logger.PVERROR, message)
+		return logger.NewErr(logger.ErrOption{Code: logger.PVERROR, Label: message, Err: err})
 	}
 	once.Do(func() {
 		c = FilterFactory(ctx, name, option)

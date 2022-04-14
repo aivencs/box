@@ -1,7 +1,7 @@
 package logger
 
 // 定义对象
-var err map[Code]BoxError
+var err map[Code]Err
 
 type Code uint
 
@@ -28,7 +28,7 @@ const (
 
 // 初始化
 func init() {
-	err = map[Code]BoxError{
+	err = map[Code]Err{
 		SUCCESS:     {Code: SUCCESS, Level: INFO, Label: "操作成功"},
 		CHECK:       {Code: CHECK, Level: WARN, Label: "请检查"},
 		LIMITERROR:  {Code: LIMITERROR, Level: ERROR, Label: "超限"},

@@ -7,14 +7,21 @@ require (
 	go.uber.org/zap v1.21.0
 )
 
-require (
-	github.com/aivencs/magic-box v0.1.9
-	github.com/spf13/viper v1.11.0
-)
+require github.com/spf13/viper v1.11.0
 
 require github.com/gomodule/redigo v1.8.8
 
 require github.com/RedisBloom/redisbloom-go v1.0.0
+
+require (
+	github.com/go-playground/universal-translator v0.18.0 // indirect
+	github.com/go-resty/resty/v2 v2.7.0
+	github.com/kr/pretty v0.3.0 // indirect
+	github.com/leodido/go-urn v1.2.1 // indirect
+	github.com/rogpeppe/go-internal v1.8.0 // indirect
+	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
+	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
+)
 
 require (
 	cloud.google.com/go v0.100.2 // indirect
@@ -25,7 +32,6 @@ require (
 	github.com/fatih/color v1.13.0 // indirect
 	github.com/fsnotify/fsnotify v1.5.1 // indirect
 	github.com/go-playground/locales v0.14.0 // indirect
-	github.com/go-playground/universal-translator v0.18.0 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/go-cmp v0.5.7 // indirect
@@ -39,7 +45,6 @@ require (
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/hashicorp/serf v0.9.7 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
-	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/magiconair/properties v1.8.6 // indirect
 	github.com/mattn/go-colorable v0.1.12 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect

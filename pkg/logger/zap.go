@@ -103,7 +103,7 @@ func InitLogger(ctx context.Context, support TypeSupport, option Option) error {
 	var err error
 	message, err := validate.Work(ctx, option)
 	if err != nil {
-		return NewBoxError(PVERROR, message)
+		return NewErr(ErrOption{Code: PVERROR, Label: message, Err: err})
 	}
 	once.Do(func() {
 		c = LoggerFactory(ctx, support, option)

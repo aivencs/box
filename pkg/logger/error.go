@@ -2,24 +2,55 @@ package logger
 
 import "unicode/utf8"
 
-// 定义选项
-type BoxErrorOption struct {
+type Err struct {
+	Err   error
 	Label string
-	Name  string
-}
-
-type BoxError struct {
-	Name  string
 	Code  Code
 	Level LevelSupport
-	Label string
 }
 
-func (c *BoxError) Error() string {
+type ErrOption struct {
+	Err   error
+	Label string
+	Code  Code
+}
+
+func (c *Err) Error() string {
 	return c.Label
 }
 
-func NewBoxError(code Code, label string) *BoxError {
+func (c *Err) GetErr() error {
+	return c.Err
+}
+
+func (c *Err) GetLabel() string {
+	return c.Label
+}
+
+func (c *Err) GetLevel() LevelSupport {
+	return c.Level
+}
+
+func (c *Err) GetCode() Code {
+	return c.Code
+}
+
+func NewErr(option ErrOption) *Err {
+	err := GetDefaultErr()
+	if option.Code != err.Code {
+		err.Code = option.Code
+	}
+	if utf8.RuneCountInString(option.Label) > 0 {
+		err.Label = option.Label
+	}
+	if option.Err != nil {
+		err.Err = option.Err
+	}
+	err.Level = GetErr(err.Code, err.Label).GetLevel()
+	return err
+}
+
+func GetErr(code Code, label string) *Err {
 	value := err[code]
 	if utf8.RuneCountInString(label) > 1 {
 		value.Label = label
@@ -27,21 +58,7 @@ func NewBoxError(code Code, label string) *BoxError {
 	return &value
 }
 
-type BoxFatal struct {
-	Label string
-}
-
-func (c *BoxFatal) Error() string {
-	return c.Label
-}
-
-func NewBoxFatal(code Code, level LevelSupport, label string) *BoxFatal {
-	return &BoxFatal{
-		Label: label,
-	}
-}
-
-func GetDefault() BoxError {
-	value := err[DEFAULT_ERROR_CODE]
-	return value
+func GetDefaultErr() *Err {
+	value := err[DEFAULT_CODE]
+	return &value
 }

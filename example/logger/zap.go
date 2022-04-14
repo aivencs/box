@@ -10,7 +10,7 @@ import (
 
 func main() {
 	/* example for error code */
-	ber := logger.NewBoxError(logger.DVERROR, "数据长度不足")
+	ber := logger.NewErr(logger.ErrOption{Code: logger.PVERROR, Label: "数据长度不足"})
 	fmt.Println("ber: ", ber)
 
 	/* example for zap logger */
