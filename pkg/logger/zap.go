@@ -94,7 +94,7 @@ type Option struct {
 
 func init() {
 	ctx := context.WithValue(context.Background(), "trace", "init-for-logger")
-	validate.InitValidate(ctx, "validator", validate.Option{})
+	validate.InitValidate(ctx, validate.VALIDATOR, validate.Option{})
 }
 
 // 初始化对象
