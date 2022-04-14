@@ -12,7 +12,7 @@ import (
 	redigo "github.com/gomodule/redigo/redis"
 )
 
-// 使用枚举限定选择
+// 使用枚举限定使用时的选项
 type TypeSupport string
 
 const (
@@ -23,7 +23,7 @@ const (
 	DEFAULT_MAXACTIVE    = 100
 )
 
-// 定义全局配置对象
+// 定义对象
 var filter Filter
 var once sync.Once
 

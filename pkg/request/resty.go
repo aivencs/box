@@ -14,10 +14,8 @@ import (
 	"github.com/go-resty/resty/v2"
 )
 
-// 使用枚举限定对象类型
+// 使用枚举限定使用时的选项
 type TypeSupport string
-
-// 使用枚举限定请求方式
 type MethodType string
 
 const (
@@ -31,7 +29,7 @@ const (
 
 var once sync.Once
 
-// 定义全局请求对象
+// 定义对象
 var request Request
 
 func init() {

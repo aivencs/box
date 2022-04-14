@@ -14,13 +14,11 @@ require github.com/gomodule/redigo v1.8.8
 require github.com/RedisBloom/redisbloom-go v1.0.0
 
 require (
+	github.com/aivencs/magic-box v0.1.9
 	github.com/go-playground/universal-translator v0.18.0 // indirect
 	github.com/go-resty/resty/v2 v2.7.0
-	github.com/kr/pretty v0.3.0 // indirect
+	github.com/labstack/echo/v4 v4.7.2
 	github.com/leodido/go-urn v1.2.1 // indirect
-	github.com/rogpeppe/go-internal v1.8.0 // indirect
-	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
-	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
 )
 
 require (
@@ -32,6 +30,7 @@ require (
 	github.com/fatih/color v1.13.0 // indirect
 	github.com/fsnotify/fsnotify v1.5.1 // indirect
 	github.com/go-playground/locales v0.14.0 // indirect
+	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/go-cmp v0.5.7 // indirect
@@ -45,6 +44,7 @@ require (
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/hashicorp/serf v0.9.7 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
+	github.com/labstack/gommon v0.3.1 // indirect
 	github.com/magiconair/properties v1.8.6 // indirect
 	github.com/mattn/go-colorable v0.1.12 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect
@@ -60,6 +60,8 @@ require (
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/subosito/gotenv v1.2.0 // indirect
+	github.com/valyala/bytebufferpool v1.0.0 // indirect
+	github.com/valyala/fasttemplate v1.2.1 // indirect
 	go.etcd.io/etcd/api/v3 v3.5.2 // indirect
 	go.etcd.io/etcd/client/pkg/v3 v3.5.2 // indirect
 	go.etcd.io/etcd/client/v2 v2.305.2 // indirect
@@ -71,6 +73,7 @@ require (
 	golang.org/x/oauth2 v0.0.0-20220411215720-9780585627b5 // indirect
 	golang.org/x/sys v0.0.0-20220412211240-33da011f77ad // indirect
 	golang.org/x/text v0.3.7 // indirect
+	golang.org/x/time v0.0.0-20201208040808-7e3f01d25324 // indirect
 	golang.org/x/xerrors v0.0.0-20220411194840-2f41105eb62f // indirect
 	google.golang.org/api v0.74.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect

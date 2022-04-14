@@ -17,7 +17,7 @@ func main() {
 			log.Fatal(err)
 		}
 		res, err := request.Get(ctx, request.Param{
-			Link:    "https://www.example.com",
+			Link:    "https://www.google.com",
 			Timeout: 2,
 		})
 		if err != nil {

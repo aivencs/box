@@ -16,7 +16,7 @@ import (
 	_ "github.com/spf13/viper/remote"
 )
 
-// 使用枚举限定配置选择
+// 使用枚举限定使用时的选项
 type TypeSupport string
 
 const (
@@ -28,7 +28,7 @@ const (
 	DEFAULT_HOST_CONSUL    = "http://localhost:8500" // Consul 服务默认地址
 )
 
-// 定义全局配置对象
+// 定义对象
 var conf Conf
 var once sync.Once
 
