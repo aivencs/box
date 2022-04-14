@@ -12,6 +12,8 @@ require (
 	github.com/spf13/viper v1.11.0
 )
 
+require github.com/gomodule/redigo v1.8.8
+
 require (
 	cloud.google.com/go v0.100.2 // indirect
 	cloud.google.com/go/compute v1.5.0 // indirect
