@@ -1,12 +1,14 @@
 package logger
 
-import "unicode/utf8"
+import (
+	"unicode/utf8"
+)
 
-type Err struct {
-	Err   error
-	Label string
-	Code  Code
-	Level LevelSupport
+type BaseError struct {
+	err   error
+	label string
+	code  Code
+	level LevelSupport
 }
 
 type ErrOption struct {
@@ -15,50 +17,41 @@ type ErrOption struct {
 	Code  Code
 }
 
-func (c *Err) Error() string {
-	return c.Label
-}
-
-func (c *Err) GetErr() error {
-	return c.Err
-}
-
-func (c *Err) GetLabel() string {
-	return c.Label
-}
-
-func (c *Err) GetLevel() LevelSupport {
-	return c.Level
-}
-
-func (c *Err) GetCode() Code {
-	return c.Code
-}
-
-func NewErr(option ErrOption) *Err {
-	err := GetDefaultErr()
-	if option.Code != err.Code {
-		err.Code = option.Code
+func NewError(code Code, label string, err error) error {
+	ers := baseErrorIns[code]
+	if utf8.RuneCountInString(label) == 0 {
+		label = ers.label
 	}
-	if utf8.RuneCountInString(option.Label) > 0 {
-		err.Label = option.Label
+	return &BaseError{
+		label: label,
+		code:  code,
+		level: ers.level,
+		err:   err,
 	}
-	if option.Err != nil {
-		err.Err = option.Err
-	}
-	err.Level = GetErr(err.Code, err.Label).GetLevel()
-	return err
 }
 
-func GetErr(code Code, label string) *Err {
-	value := err[code]
-	if utf8.RuneCountInString(label) > 1 {
-		value.Label = label
+func (c *BaseError) Error() string {
+	if utf8.RuneCountInString(c.label) > 0 {
+		return c.label
 	}
-	return &value
+	if c.err != nil {
+		return c.err.Error()
+	}
+	return c.label
 }
 
-func GetDefaultErr() *Err {
-	value := err[DEFAULT_CODE]
-	return &value
+func (c *BaseError) UnWrap() error {
+	return c.err
+}
+
+func (c *BaseError) Label() string {
+	return c.label
+}
+
+func (c *BaseError) Code() Code {
+	return c.code
+}
+
+func (c *BaseError) Level() LevelSupport {
+	return c.level
 }

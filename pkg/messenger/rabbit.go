@@ -64,7 +64,7 @@ func InitMessenger(ctx context.Context, support TypeSupport, option Option) erro
 	var err error
 	message, err := validate.Work(ctx, option)
 	if err != nil {
-		return logger.NewErr(logger.ErrOption{Code: logger.PVERROR, Label: message, Err: err})
+		return logger.NewError(logger.PVERROR, message, err)
 	}
 	once.Do(func() {
 		c = MessengerFactory(ctx, support, option)

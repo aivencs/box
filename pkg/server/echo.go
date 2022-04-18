@@ -227,7 +227,7 @@ func loggerBase(next echo.HandlerFunc, inp bool, oup bool) echo.HandlerFunc {
 					Final:           true,
 					ProcessDuration: duration,
 					Code:            response.Code,
-					Level:           logger.GetErr(response.Code, "").GetLevel(),
+					Level:           logger.GetLevelBaseCode(response.Code),
 				},
 				Inp: input,
 				Oup: output,

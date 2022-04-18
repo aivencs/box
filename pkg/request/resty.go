@@ -73,7 +73,7 @@ func InitRequest(ctx context.Context, support TypeSupport, option Option) error 
 	var err error
 	message, err := validate.Work(ctx, &option)
 	if err != nil {
-		return logger.NewErr(logger.ErrOption{Code: logger.PVERROR, Label: message, Err: err})
+		return logger.NewError(logger.PVERROR, message, err)
 	}
 	once.Do(func() {
 		c = RequestFactory(ctx, support, option)
@@ -83,7 +83,7 @@ func InitRequest(ctx context.Context, support TypeSupport, option Option) error 
 		request = c
 	})
 	if err != nil {
-		return logger.NewErr(logger.ErrOption{Code: logger.DVERROR, Err: err})
+		return logger.NewError(logger.DVERROR, message, err)
 	}
 	return nil
 }
@@ -117,7 +117,7 @@ func (c *RestyRequest) work(ctx context.Context, param Param) (Result, error) {
 	// 参数校验
 	message, err := validate.Work(ctx, param)
 	if err != nil {
-		return Result{}, logger.NewErr(logger.ErrOption{Code: logger.PVERROR, Err: err, Label: message})
+		return Result{}, logger.NewError(logger.PVERROR, message, err)
 	}
 	// 前期准备
 	serviceSafeString, _ := url.Parse(param.Link)
@@ -157,21 +157,21 @@ func (c *RestyRequest) work(ctx context.Context, param Param) (Result, error) {
 	}
 	// 请求结果处理
 	if err != nil {
-		return Result{}, logger.NewErr(logger.ErrOption{Code: logger.DVERROR, Err: err, Label: "请求时发生错误"})
+		return Result{}, logger.NewError(logger.DVERROR, "请求时发生错误", err)
 	}
 	// 状态码处理
 	if response.RawResponse.StatusCode > 201 {
 		switch response.RawResponse.StatusCode {
 		case 429:
-			err = logger.NewErr(logger.ErrOption{Code: logger.LIMITERROR})
+			err = logger.NewError(logger.LIMITERROR, "", nil)
 		case 404:
-			err = logger.NewErr(logger.ErrOption{Code: logger.CHECK, Label: "资源不存在"})
+			err = logger.NewError(logger.CHECK, "资源不存在", nil)
 		case 200:
 			err = nil
 		case 201:
 			err = nil
 		default:
-			err = logger.NewErr(logger.ErrOption{Code: logger.STATUSERROR})
+			err = logger.NewError(logger.STATUSERROR, "", nil)
 		}
 	}
 	// 构造结果并返回
