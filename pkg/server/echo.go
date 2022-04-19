@@ -186,28 +186,21 @@ func loggerBase(next echo.HandlerFunc, inp bool, oup bool) echo.HandlerFunc {
 		c.Set("context", ctx)
 		// 校验追踪编码
 		message, err := validate.Work(context.Background(), &header)
+		// 拦截响应
+		responseBuffer := new(bytes.Buffer)
+		mw := io.MultiWriter(c.Response().Writer, responseBuffer)
+		writer := &bodyDumpResponseWriter{Writer: mw, ResponseWriter: c.Response().Writer}
+		c.Response().Writer = writer
 		if err != nil {
 			// 通过调用空接口避免接口和日志输出不统一
 			c.Set("message", message)
-			// 拦截响应
-			responseBuffer := new(bytes.Buffer)
-			mw := io.MultiWriter(c.Response().Writer, responseBuffer)
-			writer := &bodyDumpResponseWriter{Writer: mw, ResponseWriter: c.Response().Writer}
-			c.Response().Writer = writer
 			EmptyHandler(c)
-			// 解析响应内容
-			json.Unmarshal(responseBuffer.Bytes(), &response)
 		} else {
-			// 拦截响应
-			responseBuffer := new(bytes.Buffer)
-			mw := io.MultiWriter(c.Response().Writer, responseBuffer)
-			writer := &bodyDumpResponseWriter{Writer: mw, ResponseWriter: c.Response().Writer}
-			c.Response().Writer = writer
 			// 调用目标接口
 			err = next(c)
-			// 解析响应内容
-			json.Unmarshal(responseBuffer.Bytes(), &response)
 		}
+		// 解析响应内容
+		json.Unmarshal(responseBuffer.Bytes(), &response)
 		duration := time.Since(startT).Milliseconds()
 		// 构建日志信息
 		input := map[string]interface{}{
