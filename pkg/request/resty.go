@@ -5,6 +5,7 @@ import (
 	"crypto/tls"
 	"errors"
 	"net/url"
+	"strings"
 	"sync"
 	"time"
 	"unicode/utf8"
@@ -157,10 +158,18 @@ func (c *RestyRequest) work(ctx context.Context, param Param) (Result, error) {
 	}
 	// 请求结果处理
 	if err != nil {
-		return Result{}, logger.NewError(logger.DVERROR, "请求时发生错误", err)
+		ers := logger.NewError(logger.DVERROR, "请求时发生错误", err)
+		if strings.Contains(err.Error(), "Client.Timeout") {
+			ers = logger.NewError(logger.TIMEOUT, "", err)
+		}
+		return Result{}, ers
+	}
+	// 空响应处理
+	if response.RawResponse == nil {
+		return Result{}, logger.NewError(logger.TIMEOUT, "空响应", nil)
 	}
 	// 状态码处理
-	if response.RawResponse.StatusCode > 201 {
+	if response.RawResponse.StatusCode >= 201 {
 		switch response.RawResponse.StatusCode {
 		case 429:
 			err = logger.NewError(logger.LIMITERROR, "", nil)
