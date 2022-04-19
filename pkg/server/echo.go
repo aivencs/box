@@ -214,7 +214,7 @@ func loggerBase(next echo.HandlerFunc, inp bool, oup bool) echo.HandlerFunc {
 			"status_code": c.Response().Status,
 		}
 		if inp {
-			input["param"] = c.Request()
+			input["param"] = c.Get("request")
 		}
 		if oup {
 			output["response"] = response
