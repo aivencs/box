@@ -159,7 +159,6 @@ func EmptyHandler(c echo.Context) error {
 		Message: c.Get("message").(string),
 		Result:  nil,
 	}
-
 	return c.JSONPretty(http.StatusOK, res, "")
 }
 
@@ -190,7 +189,14 @@ func loggerBase(next echo.HandlerFunc, inp bool, oup bool) echo.HandlerFunc {
 		if err != nil {
 			// 通过调用空接口避免接口和日志输出不统一
 			c.Set("message", message)
+			// 拦截响应
+			responseBuffer := new(bytes.Buffer)
+			mw := io.MultiWriter(c.Response().Writer, responseBuffer)
+			writer := &bodyDumpResponseWriter{Writer: mw, ResponseWriter: c.Response().Writer}
+			c.Response().Writer = writer
 			EmptyHandler(c)
+			// 解析响应内容
+			json.Unmarshal(responseBuffer.Bytes(), &response)
 		} else {
 			// 拦截响应
 			responseBuffer := new(bytes.Buffer)
