@@ -77,7 +77,10 @@ func InitRequest(ctx context.Context, support TypeSupport, option Option) error 
 		return logger.NewError(logger.PVERROR, message, err)
 	}
 	once.Do(func() {
-		c = RequestFactory(ctx, support, option)
+		c, err = RequestFactory(ctx, support, option)
+		if err != nil {
+			return
+		}
 		if c == nil {
 			err = errors.New("初始化失败")
 		}
@@ -90,7 +93,7 @@ func InitRequest(ctx context.Context, support TypeSupport, option Option) error 
 }
 
 // 抽象工厂
-func RequestFactory(ctx context.Context, support TypeSupport, option Option) Request {
+func RequestFactory(ctx context.Context, support TypeSupport, option Option) (Request, error) {
 	switch support {
 	case RESTY:
 		return NewRestyRequest(ctx, option)
@@ -100,8 +103,8 @@ func RequestFactory(ctx context.Context, support TypeSupport, option Option) Req
 }
 
 // 创建基于Resty的请求对象
-func NewRestyRequest(ctx context.Context, option Option) Request {
-	return &RestyRequest{}
+func NewRestyRequest(ctx context.Context, option Option) (Request, error) {
+	return &RestyRequest{}, nil
 }
 
 func (c *RestyRequest) Get(ctx context.Context, param Param) (Result, error) {

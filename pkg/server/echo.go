@@ -67,7 +67,10 @@ func InitServer(ctx context.Context, support TypeSupport, option Option) error {
 		return errors.New(message)
 	}
 	once.Do(func() {
-		c = ServerFactory(ctx, support, option)
+		c, err = ServerFactory(ctx, support, option)
+		if err != nil {
+			return
+		}
 		if c == nil {
 			err = errors.New("初始化失败")
 		}
@@ -76,7 +79,7 @@ func InitServer(ctx context.Context, support TypeSupport, option Option) error {
 	return err
 }
 
-func ServerFactory(ctx context.Context, support TypeSupport, option Option) Server {
+func ServerFactory(ctx context.Context, support TypeSupport, option Option) (Server, error) {
 	switch support {
 	case SERVER_ECHO:
 		return NewEchoServer(ctx, option)
@@ -85,7 +88,7 @@ func ServerFactory(ctx context.Context, support TypeSupport, option Option) Serv
 	}
 }
 
-func NewEchoServer(ctx context.Context, option Option) Server {
+func NewEchoServer(ctx context.Context, option Option) (Server, error) {
 	svr := echo.New()
 	if !option.DisableMiddCors {
 		svr.Use(middleware.CORS())
@@ -102,7 +105,7 @@ func NewEchoServer(ctx context.Context, option Option) Server {
 		Kernel: svr,
 		Port:   option.Port,
 		Host:   option.Host,
-	}
+	}, nil
 }
 
 func (c *EchoServer) Work() {

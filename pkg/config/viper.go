@@ -65,7 +65,10 @@ func InitConf(ctx context.Context, support TypeSupport, option Option) error {
 		return logger.NewError(logger.PVERROR, message, err)
 	}
 	once.Do(func() {
-		c = ConfFactory(ctx, support, option)
+		c, err = ConfFactory(ctx, support, option)
+		if err != nil {
+			return
+		}
 		if c == nil {
 			err = errors.New("初始化失败")
 		}
@@ -75,7 +78,7 @@ func InitConf(ctx context.Context, support TypeSupport, option Option) error {
 }
 
 // 配置的抽象工厂
-func ConfFactory(ctx context.Context, support TypeSupport, option Option) Conf {
+func ConfFactory(ctx context.Context, support TypeSupport, option Option) (Conf, error) {
 	switch support {
 	case Consul:
 		return NewConsulConf(ctx, option)
@@ -91,7 +94,7 @@ type ConsulConf struct {
 }
 
 // 创建基于Consul的配置对象
-func NewConsulConf(ctx context.Context, option Option) Conf {
+func NewConsulConf(ctx context.Context, option Option) (Conf, error) {
 	// 根据参数调整
 	if utf8.RuneCountInString(option.Host) == 0 {
 		option.Host = DEFAULT_HOST_CONSUL
@@ -107,12 +110,12 @@ func NewConsulConf(ctx context.Context, option Option) Conf {
 	// 获取远端配置并映射到结构体
 	err := vip.ReadRemoteConfig()
 	if err != nil {
-		return nil
+		return nil, err
 	}
 	if option.Bind != nil {
 		vip.Unmarshal(&option.Bind)
 	}
-	return &ConsulConf{Kernel: vip}
+	return &ConsulConf{Kernel: vip}, nil
 }
 
 // 定期更新

@@ -62,7 +62,10 @@ func InitCache(ctx context.Context, support TypeSupport, option Option) error {
 		return logger.NewError(logger.PVERROR, message, err)
 	}
 	once.Do(func() {
-		c = CacheFactory(ctx, support, option)
+		c, err = CacheFactory(ctx, support, option)
+		if err != nil {
+			return
+		}
 		if c == nil {
 			err = errors.New("初始化失败")
 		}
@@ -72,7 +75,7 @@ func InitCache(ctx context.Context, support TypeSupport, option Option) error {
 }
 
 // 抽象工厂
-func CacheFactory(ctx context.Context, support TypeSupport, option Option) Cache {
+func CacheFactory(ctx context.Context, support TypeSupport, option Option) (Cache, error) {
 	switch support {
 	case REDIS:
 		return NewRedisCache(ctx, option)
@@ -100,8 +103,9 @@ func applyOption(option Option) {
 }
 
 // 创建基于Redis的对象
-func NewRedisCache(ctx context.Context, option Option) Cache {
+func NewRedisCache(ctx context.Context, option Option) (Cache, error) {
 	applyOption(option)
+	var err error
 	pool := &redigo.Pool{
 		MaxIdle:     option.MaxIdle,
 		IdleTimeout: option.IdleTimeout,
@@ -131,7 +135,7 @@ func NewRedisCache(ctx context.Context, option Option) Cache {
 	}
 	return &RedisCache{
 		Pool: pool,
-	}
+	}, err
 }
 
 func (c *RedisCache) Get(ctx context.Context, key string) (interface{}, error) {

@@ -2,11 +2,13 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
 	"time"
 
 	"github.com/aivencs/box/pkg/config"
+	"github.com/aivencs/box/pkg/logger"
 )
 
 var Conf = BindConf{}
@@ -52,11 +54,12 @@ type BindConfProxy struct {
 }
 
 func main() {
+	var ers = new(logger.BaseError)
 	ctx := context.Background()
 	// 初始化配置对象
 	err := config.InitConf(ctx, config.Consul, config.Option{
 		Application: "delnic-service-request",
-		Env:         "dev",
+		Env:         "devw",
 		Auth:        true,
 		Username:    "piker019",
 		Password:    "cro00Too01",
@@ -66,6 +69,9 @@ func main() {
 		Update:      true,
 		Interval:    10,
 	})
+	if errors.As(err, &ers) {
+		fmt.Println(ers)
+	}
 	if err != nil {
 		log.Fatal(err)
 	}

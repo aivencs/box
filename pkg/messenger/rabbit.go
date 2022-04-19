@@ -67,7 +67,10 @@ func InitMessenger(ctx context.Context, support TypeSupport, option Option) erro
 		return logger.NewError(logger.PVERROR, message, err)
 	}
 	once.Do(func() {
-		c = MessengerFactory(ctx, support, option)
+		c, err = MessengerFactory(ctx, support, option)
+		if err != nil {
+			return
+		}
 		if c == nil {
 			err = errors.New("初始化失败")
 		}
@@ -77,7 +80,7 @@ func InitMessenger(ctx context.Context, support TypeSupport, option Option) erro
 }
 
 // 抽象工厂
-func MessengerFactory(ctx context.Context, support TypeSupport, option Option) Messenger {
+func MessengerFactory(ctx context.Context, support TypeSupport, option Option) (Messenger, error) {
 	switch support {
 	case RABBIT:
 		return NewRabbitMessenger(ctx, option)
@@ -108,7 +111,7 @@ type RabbitConsume struct {
 }
 
 // 创建基于Rabbitmq的对象
-func NewRabbitMessenger(ctx context.Context, option Option) Messenger {
+func NewRabbitMessenger(ctx context.Context, option Option) (Messenger, error) {
 	conf := amqp.Config{
 		Heartbeat: time.Second * time.Duration(option.Heartbeat),
 	}
@@ -118,7 +121,7 @@ func NewRabbitMessenger(ctx context.Context, option Option) Messenger {
 	}
 	conn, err := amqp.DialConfig(address, conf)
 	if err != nil {
-		return nil
+		return nil, err
 	}
 	if option.Qos == 0 {
 		option.Qos = DEFAULT_QOS
@@ -127,7 +130,7 @@ func NewRabbitMessenger(ctx context.Context, option Option) Messenger {
 		Topic:   option.Topic,
 		Connect: conn,
 		Qos:     option.Qos,
-	}
+	}, nil
 }
 
 func (c *RabbitMessenger) Sent(ctx context.Context, payload SentPayload) error {

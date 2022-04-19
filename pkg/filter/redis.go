@@ -62,7 +62,10 @@ func InitFilter(ctx context.Context, name TypeSupport, option Option) error {
 		return logger.NewError(logger.PVERROR, message, err)
 	}
 	once.Do(func() {
-		c = FilterFactory(ctx, name, option)
+		c, err = FilterFactory(ctx, name, option)
+		if err != nil {
+			return
+		}
 		if c == nil {
 			err = errors.New("初始化失败")
 		}
@@ -72,7 +75,7 @@ func InitFilter(ctx context.Context, name TypeSupport, option Option) error {
 }
 
 // 抽象工厂
-func FilterFactory(ctx context.Context, support TypeSupport, option Option) Filter {
+func FilterFactory(ctx context.Context, support TypeSupport, option Option) (Filter, error) {
 	switch support {
 	case BLOOM:
 		return NewBloomFilter(ctx, option)
@@ -90,8 +93,9 @@ type BloomFilter struct {
 }
 
 // 创建基于的对象
-func NewBloomFilter(ctx context.Context, option Option) Filter {
+func NewBloomFilter(ctx context.Context, option Option) (Filter, error) {
 	applyOption(option)
+	var err error
 	pool := &redigo.Pool{
 		MaxIdle:     option.MaxIdle,
 		IdleTimeout: option.IdleTimeout,
@@ -124,7 +128,7 @@ func NewBloomFilter(ctx context.Context, option Option) Filter {
 		Kernel: rbc,
 		Pool:   pool,
 		Key:    option.Key,
-	}
+	}, err
 }
 
 func applyOption(option Option) {
