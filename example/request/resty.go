@@ -17,8 +17,9 @@ func main() {
 			log.Fatal(err)
 		}
 		res, err := request.Get(ctx, request.Param{
-			Link:    "https://www.google.com",
-			Timeout: 2,
+			Link:             "https://wind.in-en.com/windcorp/",
+			Timeout:          2,
+			EnableSkipVerify: true,
 		})
 		if err != nil {
 			log.Fatal(err)
