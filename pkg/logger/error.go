@@ -31,9 +31,6 @@ func NewError(code Code, label string, err error) error {
 }
 
 func (c *BaseError) Error() string {
-	if utf8.RuneCountInString(c.label) > 0 {
-		return c.label
-	}
 	if c.err != nil {
 		return c.err.Error()
 	}
