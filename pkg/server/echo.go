@@ -3,7 +3,6 @@ package server
 import (
 	"bytes"
 	"context"
-	"encoding/binary"
 	"encoding/json"
 	"errors"
 	"io"
@@ -150,11 +149,10 @@ type bodyDumpResponseWriter struct {
 
 // 接口响应结果
 type ServerResponse struct {
-	Code      logger.Code `json:"code"`
-	Trace     string      `json:"trace"`
-	Message   string      `json:"message"`
-	Result    interface{} `json:"result"`
-	Traceback string      `json:"traceback"`
+	Code    logger.Code `json:"code"`
+	Trace   string      `json:"trace"`
+	Message string      `json:"message"`
+	Result  interface{} `json:"result"`
 }
 
 func EmptyHandler(c echo.Context) error {
@@ -171,13 +169,17 @@ type Header struct {
 	X_REQUEST_ID string `json:"X-REQUEST-ID" label:"追踪编码" validate:"required,min=16,max=100"`
 }
 
+type T struct {
+	A int64
+	B float64
+}
+
 // 基础日志中间件
 func loggerBase(next echo.HandlerFunc, inp bool, oup bool) echo.HandlerFunc {
 	return func(c echo.Context) (err error) {
 		var header Header
 		startT := time.Now()
-		response := ServerResponse{Traceback: ""}
-		responseTemp := ServerResponse{Traceback: ""}
+		response := ServerResponse{}
 		// 获取追踪编码
 		ids := c.Request().Header.Values("X-REQUEST-ID")
 		if len(ids) > 0 {
@@ -193,21 +195,9 @@ func loggerBase(next echo.HandlerFunc, inp bool, oup bool) echo.HandlerFunc {
 		// 校验追踪编码
 		message, err := validate.Work(context.Background(), &header)
 		// 拦截响应
-		/*
-			拷贝内容
-			还原结构
-			更改字段
-			转换成buffer
-			新buffer写到writer
-		*/
 		responseBuffer := new(bytes.Buffer)
-		responseBufferTemp := new(bytes.Buffer)
-		io.MultiWriter(c.Response().Writer, responseBuffer)
-		json.Unmarshal(responseBuffer.Bytes(), &response)
-		response.Traceback = ""
-		buf := &bytes.Buffer{}
-		binary.Write(buf, binary.BigEndian, response)
-		writer := &bodyDumpResponseWriter{Writer: buf, ResponseWriter: c.Response().Writer}
+		mw := io.MultiWriter(c.Response().Writer, responseBuffer)
+		writer := &bodyDumpResponseWriter{Writer: mw, ResponseWriter: c.Response().Writer}
 		c.Response().Writer = writer
 		if err != nil {
 			// 通过调用空接口避免接口和日志输出不统一
@@ -218,7 +208,7 @@ func loggerBase(next echo.HandlerFunc, inp bool, oup bool) echo.HandlerFunc {
 			err = next(c)
 		}
 		// 解析响应内容
-		json.Unmarshal(responseBufferTemp.Bytes(), &responseTemp)
+		json.Unmarshal(responseBuffer.Bytes(), &response)
 		duration := time.Since(startT).Milliseconds()
 		// 构建日志信息
 		input := map[string]interface{}{
@@ -249,7 +239,6 @@ func loggerBase(next echo.HandlerFunc, inp bool, oup bool) echo.HandlerFunc {
 				Inp: input,
 				Oup: output,
 			},
-			Traceback: response.Traceback,
 		})
 		return
 	}
