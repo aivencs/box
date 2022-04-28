@@ -149,10 +149,11 @@ type bodyDumpResponseWriter struct {
 
 // 接口响应结果
 type ServerResponse struct {
-	Code    logger.Code `json:"code"`
-	Trace   string      `json:"trace"`
-	Message string      `json:"message"`
-	Result  interface{} `json:"result"`
+	Code      logger.Code `json:"code"`
+	Trace     string      `json:"trace"`
+	Message   string      `json:"message"`
+	Result    interface{} `json:"result"`
+	Traceback string      `json:"traceback"`
 }
 
 func EmptyHandler(c echo.Context) error {
@@ -234,7 +235,9 @@ func loggerBase(next echo.HandlerFunc, inp bool, oup bool) echo.HandlerFunc {
 				Inp: input,
 				Oup: output,
 			},
+			Traceback: response.Traceback,
 		})
+		response.Traceback = ""
 		return
 	}
 }
