@@ -3,6 +3,7 @@ package server
 import (
 	"bytes"
 	"context"
+	"encoding/binary"
 	"encoding/json"
 	"errors"
 	"io"
@@ -175,7 +176,8 @@ func loggerBase(next echo.HandlerFunc, inp bool, oup bool) echo.HandlerFunc {
 	return func(c echo.Context) (err error) {
 		var header Header
 		startT := time.Now()
-		response := ServerResponse{}
+		response := ServerResponse{Traceback: ""}
+		responseTemp := ServerResponse{Traceback: ""}
 		// 获取追踪编码
 		ids := c.Request().Header.Values("X-REQUEST-ID")
 		if len(ids) > 0 {
@@ -191,9 +193,21 @@ func loggerBase(next echo.HandlerFunc, inp bool, oup bool) echo.HandlerFunc {
 		// 校验追踪编码
 		message, err := validate.Work(context.Background(), &header)
 		// 拦截响应
+		/*
+			拷贝内容
+			还原结构
+			更改字段
+			转换成buffer
+			新buffer写到writer
+		*/
 		responseBuffer := new(bytes.Buffer)
-		mw := io.MultiWriter(c.Response().Writer, responseBuffer)
-		writer := &bodyDumpResponseWriter{Writer: mw, ResponseWriter: c.Response().Writer}
+		responseBufferTemp := new(bytes.Buffer)
+		io.MultiWriter(c.Response().Writer, responseBuffer)
+		json.Unmarshal(responseBuffer.Bytes(), &response)
+		response.Traceback = ""
+		buf := &bytes.Buffer{}
+		binary.Write(buf, binary.BigEndian, response)
+		writer := &bodyDumpResponseWriter{Writer: buf, ResponseWriter: c.Response().Writer}
 		c.Response().Writer = writer
 		if err != nil {
 			// 通过调用空接口避免接口和日志输出不统一
@@ -204,7 +218,7 @@ func loggerBase(next echo.HandlerFunc, inp bool, oup bool) echo.HandlerFunc {
 			err = next(c)
 		}
 		// 解析响应内容
-		json.Unmarshal(responseBuffer.Bytes(), &response)
+		json.Unmarshal(responseBufferTemp.Bytes(), &responseTemp)
 		duration := time.Since(startT).Milliseconds()
 		// 构建日志信息
 		input := map[string]interface{}{
@@ -237,7 +251,6 @@ func loggerBase(next echo.HandlerFunc, inp bool, oup bool) echo.HandlerFunc {
 			},
 			Traceback: response.Traceback,
 		})
-		response.Traceback = ""
 		return
 	}
 }
