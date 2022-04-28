@@ -44,6 +44,13 @@ func (c *BaseError) UnWrap() error {
 	return c.err
 }
 
+func (c *BaseError) UnWrapError() string {
+	if c.err != nil {
+		return c.err.Error()
+	}
+	return ""
+}
+
 func (c *BaseError) Label() string {
 	return c.label
 }
